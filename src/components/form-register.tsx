@@ -27,6 +27,7 @@ import { Calendar } from "./ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { PhoneInputShadcnUiPhoneInput } from "./phone-input";
 
 const FormRegister = () => {
   const [error, setError] = useState<string | null>(null);
@@ -230,6 +231,7 @@ const FormRegister = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
+                      mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
                       captionLayout="dropdown-buttons"
@@ -249,7 +251,13 @@ const FormRegister = () => {
               <FormItem>
                 <FormLabel>Número de cédula</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="1234567890" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="1234567890"
+                    {...field}
+                    defaultValue="0"
+                    min="0"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -262,7 +270,10 @@ const FormRegister = () => {
               <FormItem>
                 <FormLabel>Número de teléfono</FormLabel>
                 <FormControl>
-                  <Input type="tel" placeholder="+1 555 123 4567" {...field} />
+                  <PhoneInputShadcnUiPhoneInput
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

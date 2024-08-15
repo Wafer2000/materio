@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, useDayPicker } from "react-day-picker";
+import { DayPicker, useDayPicker, useNavigation } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -25,7 +25,7 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium hidden",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -53,6 +53,7 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
+        caption_dropdowns: "flex gap-1",
         ...classNames,
       }}
       components={{
@@ -61,14 +62,22 @@ function Calendar({
         Dropdown: (props) => {
           const { fromDate, fromMonth, fromYear, toDate, toMonth, toYear } =
             useDayPicker();
+          const { goToMonth, currentMonth } = useNavigation();
           if (props.name === "months") {
             const selectItems = Array.from({ length: 12 }, (_, i) => ({
               value: i.toString(),
               label: format(setMonth(new Date(), i), "MMM"),
             }));
             return (
-              <Select>
-                <SelectTrigger>Mes</SelectTrigger>
+              <Select
+                onValueChange={(newValue) => {
+                  const newDate = new Date(currentMonth);
+                  newDate.setMonth(parseInt(newValue));
+                  goToMonth(newDate);
+                }}
+                value={props.value?.toString()}
+              >
+                <SelectTrigger>{format(currentMonth, "MMM")}</SelectTrigger>
                 <SelectContent>
                   {selectItems.map((selectItem) => (
                     <SelectItem value={selectItem.value}>
@@ -92,8 +101,15 @@ function Calendar({
               }));
             }
             return (
-              <Select>
-                <SelectTrigger>Año</SelectTrigger>
+              <Select
+                onValueChange={(newValue) => {
+                  const newDate = new Date(currentMonth);
+                  newDate.setFullYear(parseInt(newValue));
+                  goToMonth(newDate);
+                }}
+                value={props.value?.toString()}
+              >
+                <SelectTrigger>{currentMonth.getFullYear()}</SelectTrigger>
                 <SelectContent>
                   {selectItems.map((selectItem) => (
                     <SelectItem value={selectItem.value}>
